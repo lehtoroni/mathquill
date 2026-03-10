@@ -7,20 +7,24 @@ if [ $# -ne 1 ]; then
 fi
 
 VERSION=$1
+DIST_DIR=$(mktemp -d)
 
-# Bump version in package.json and build
-npm version $VERSION --no-git-tag-version
+# Bump version and build
+npm version "$VERSION" --no-git-tag-version
 make clean && make
 
-cp -r build/ /tmp/mq-build-$$
-cp package.json /tmp/mq-package-$$.json
-cp quickstart.html /tmp/mq-quickstart-$$.html
+echo "Preparing dist worktree..."
 
-# "Publish" into a separate branch/tag
-echo "Switching to dist branch..."
-git checkout dist 2>/dev/null || git checkout -b dist
+# Create worktree for dist branch
+if git show-ref --verify --quiet refs/heads/dist; then
+    git worktree add "$DIST_DIR" dist
+else
+    git worktree add -b dist "$DIST_DIR"
+fi
 
-# On orphan branch, remove everything;
+cd "$DIST_DIR"
+
+# Clear previous contents
 git rm -rf . 2>/dev/null || true
 
 cat > .gitignore << 'EOF'
@@ -28,21 +32,22 @@ node_modules/
 *.log
 EOF
 
-# Restore from temp
-mv /tmp/mq-build-$$ ./build
-cp /tmp/mq-package-$$.json ./package.json
-cp /tmp/mq-quickstart-$$.html ./quickstart.html
+# Copy artifacts
+cp -r ../build .
+cp ../package.json .
+cp ../quickstart.html .
 
-# Add the required files
-git add .gitignore build/ package.json quickstart.html
+git add .gitignore build package.json quickstart.html
 git commit -m "dist v$VERSION"
-git tag "v$VERSION" 2>/dev/null || echo "Tag already exists, skipping"
+
+git tag -f "v$VERSION"
 
 git push origin dist --tags
 
-# Cleanup
-rm -rf /tmp/mq-build-$$ /tmp/mq-package-$$.json /tmp/mq-quickstart-$$.html
+cd - >/dev/null
 
-echo "Done! Install with: npm install github:lehtoroni/mathquill#v$VERSION"
-git checkout master
+# Cleanup worktree
+git worktree remove "$DIST_DIR"
 
+echo "Done! Install with:"
+echo "npm install github:lehtoroni/mathquill#v$VERSION"
