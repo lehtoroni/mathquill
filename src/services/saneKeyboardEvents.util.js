@@ -141,9 +141,13 @@ var saneKeyboardEvents = (function() {
     // HTMLTextareaElement::selection{Start,End}.
     function hasSelection() {
       var dom = textarea[0];
+      //console.log(dom.selectionStart, dom.selectionEnd);
 
       if (!('selectionStart' in dom)) return false;
-      return dom.selectionStart !== dom.selectionEnd;
+      
+      // !== '^' is a temporary workaround for the dead key ^ issue
+      // (see https://github.com/mathquill/mathquill/issues/727 )
+      return dom.selectionStart !== dom.selectionEnd && dom.value !== '^';
     }
 
     function handleKey() {
