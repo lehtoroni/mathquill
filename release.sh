@@ -18,7 +18,7 @@ cp quickstart.html /tmp/mq-quickstart-$$.html
 
 # "Publish" into a separate branch/tag
 echo "Switching to dist branch..."
-git checkout dist 2>/dev/null || git checkout --orphan dist
+git checkout dist 2>/dev/null || git checkout -b dist
 
 # On orphan branch, remove everything;
 git rm -rf . 2>/dev/null || true
