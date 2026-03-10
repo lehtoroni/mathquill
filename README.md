@@ -1,8 +1,11 @@
-# [MathQuill](http://mathquill.com)
+# MathQuill (fork)
 
-- https://digabi.github.io/mathquill/test/demo.html
-- https://digabi.github.io/mathquill/test/basic.html
-- https://digabi.github.io/mathquill/test/visual.html
+> [!NOTE]
+> This is the [L'Math](https://lehtodigital.fi/lmath/) fork of MathQuill (or a fork of the Abitti fork, actually). The goal is to fix some of the most annoying issues.
+> #### Annoyances fixed/patched so far:
+> - `\sup` being treated as `\supset`
+
+-----
 
 by [Han](http://github.com/laughinghan), [Jeanine](http://github.com/jneen), and [Mary](http://github.com/stufflebear) (<maintainers@mathquill.com>) [<img alt="slackin.mathquill.com" src="http://slackin.mathquill.com/badge.svg" align="top">](http://slackin.mathquill.com)
 
