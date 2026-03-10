@@ -44,7 +44,7 @@ git commit -m "dist v$VERSION"
 git tag -f "v$VERSION"
 git push origin dist --tags
 
-cd >/dev/null
+cd "$REPO_ROOT"
 
 #git worktree remove "$DIST_DIR"
 
