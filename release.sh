@@ -7,34 +7,41 @@ if [ $# -ne 1 ]; then
 fi
 
 VERSION=$1
-make
-# Publish NPM package
-#yarn publish "--$VERSION"
-#git push --follow-tags
 
-# Publish gh-pages
-#git checkout gh-pages
-#git reset --hard master
-#git add -f build
-#git commit -m "Add distributable files for latest version"
-#git push -f
-#git checkout -
+# Bump version in package.json and build
+npm version $VERSION --no-git-tag-version
+make clean && make
 
-#!/bin/bash
-# scripts/publish-dist.sh
+cp -r build/ /tmp/mq-build-$$
+cp package.json /tmp/mq-package-$$.json
+cp quickstart.html /tmp/mq-quickstart-$$.html
 
 # "Publish" into a separate branch/tag
 echo "Switching to dist branch..."
 git checkout dist 2>/dev/null || git checkout --orphan dist
 
-# Bring in only the needed files from master
-git checkout master -- build/ package.json quickstart.html
+# On orphan branch, remove everything;
+git rm -rf . 2>/dev/null || true
 
-git add build/ package.json quickstart.html
+cat > .gitignore << 'EOF'
+node_modules/
+*.log
+EOF
+
+# Restore from temp
+cp -r /tmp/mq-build-$$ ./build
+cp /tmp/mq-package-$$.json ./package.json
+cp /tmp/mq-quickstart-$$.html ./quickstart.html
+
+# Add the required files
+git add .gitignore build/ package.json quickstart.html
 git commit -m "dist v$VERSION"
 git tag "v$VERSION" 2>/dev/null || echo "Tag already exists, skipping"
 
 git push origin dist --tags
+
+# Cleanup
+rm -rf /tmp/mq-build-$$ /tmp/mq-package-$$.json /tmp/mq-quickstart-$$.html
 
 echo "Done! Install with: npm install github:lehtoroni/mathquill#v$VERSION"
 git checkout master
