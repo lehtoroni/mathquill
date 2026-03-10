@@ -27,8 +27,8 @@ make
 echo "Switching to dist branch..."
 git checkout dist 2>/dev/null || git checkout --orphan dist
 
-# Bring in only the needed files from main
-git checkout main -- build/ package.json quickstart.html
+# Bring in only the needed files from master
+git checkout master -- build/ package.json quickstart.html
 
 git add build/ package.json quickstart.html
 git commit -m "dist v$VERSION"
@@ -37,5 +37,5 @@ git tag "v$VERSION" 2>/dev/null || echo "Tag already exists, skipping"
 git push origin dist --tags
 
 echo "Done! Install with: npm install github:lehtoroni/mathquill#v$VERSION"
-git checkout main
+git checkout master
 
