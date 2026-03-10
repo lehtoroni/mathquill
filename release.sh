@@ -23,10 +23,6 @@ make
 #!/bin/bash
 # scripts/publish-dist.sh
 
-set -e
-
-VERSION=$(node -p "require('./package.json').version")
-
 # "Publish" into a separate branch/tag
 echo "Switching to dist branch..."
 git checkout dist 2>/dev/null || git checkout --orphan dist
