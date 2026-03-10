@@ -29,7 +29,7 @@ node_modules/
 EOF
 
 # Restore from temp
-cp -r /tmp/mq-build-$$ ./build
+mv /tmp/mq-build-$$ ./build
 cp /tmp/mq-package-$$.json ./package.json
 cp /tmp/mq-quickstart-$$.html ./quickstart.html
 
