@@ -1,7 +1,9 @@
 # MathQuill (fork)
 
 > [!NOTE]
-> This is the [L'Math](https://lehtodigital.fi/lmath/) fork of MathQuill (or a fork of the Abitti fork, actually). The goal is to fix some of the most annoying issues.
+> This is the "[L'Math fork](https://lehtodigital.fi/lmath/)" of MathQuill (or a fork of the Abitti fork, actually). The goal is to fix some of the most annoying issues.
+> #### Using this fork
+> `npm install --save github:lehtoroni/mathquill#vTAG.VERSION.HERE`
 > #### Annoyances fixed/patched so far:
 > - `\sup` being treated as `\supset`
 
