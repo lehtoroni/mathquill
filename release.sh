@@ -10,6 +10,8 @@ VERSION=$1
 DIST_DIR=$(mktemp -d)
 REPO_ROOT=$(git rev-parse --show-toplevel)
 
+trap 'git worktree remove -f "$DIST_DIR" 2>/dev/null || true' EXIT
+
 # Bump version and build
 npm version "$VERSION" --no-git-tag-version
 make clean && make
@@ -44,7 +46,7 @@ git push origin dist --tags
 
 cd >/dev/null
 
-git worktree remove "$DIST_DIR"
+#git worktree remove "$DIST_DIR"
 
 echo "Done! Install with:"
 echo "npm install github:lehtoroni/mathquill#v$VERSION"
