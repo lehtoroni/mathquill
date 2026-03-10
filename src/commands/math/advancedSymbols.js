@@ -38,7 +38,8 @@ LatexCmds.notni = LatexCmds.niton = LatexCmds.notcontains = LatexCmds.doesnotcon
 
 LatexCmds.sub = LatexCmds.subset = bind(BinaryOperator,'\\subset ','&sub;');
 
-LatexCmds.sup = LatexCmds.supset = LatexCmds.superset =
+// fix: \sup => \supset (sup (supremum) != supset)
+LatexCmds.sups = LatexCmds.supset = LatexCmds.superset =
   bind(BinaryOperator,'\\supset ','&sup;');
 
 LatexCmds.nsub = LatexCmds.notsub =
