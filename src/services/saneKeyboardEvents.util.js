@@ -133,6 +133,7 @@ var saneKeyboardEvents = (function() {
       shouldBeSelected = !!text;
     }
     var shouldBeSelected = false;
+    var isComposing = false;
 
     // -*- helper subroutines -*- //
 
@@ -144,17 +145,50 @@ var saneKeyboardEvents = (function() {
       //console.log(dom.selectionStart, dom.selectionEnd);
 
       if (!('selectionStart' in dom)) return false;
+      if (isComposing) return false;
       
       // !== '^' is a temporary workaround for the dead key ^ issue
       // (see https://github.com/mathquill/mathquill/issues/727 )
-      return dom.selectionStart !== dom.selectionEnd && dom.value !== '^';
+      return dom.selectionStart !== dom.selectionEnd; //&& dom.value !== '^';
     }
 
     function handleKey() {
       handlers.keystroke(stringify(keydown), keydown);
     }
-
-    // -*- event handlers -*- //
+    
+    // Manual workaround for the ^ and ~ compose issue.
+    // Here it's done to the "raw" textarea for maximum control over the mentioned events.
+    var COMPOSE_REPLACE = ['^', '~'];
+    textarea[0].addEventListener('compositionstart', function(e) {
+      isComposing = true;
+      checkTextarea = noop;
+      clearTimeout(timeoutId);
+    }, true);
+    textarea[0].addEventListener('compositionupdate', function(e) {
+      if (COMPOSE_REPLACE.includes(e.data)) {
+          setTimeout(function() {
+            
+              // Abort composition by blurring and refocusing
+              textarea[0].blur();
+              textarea[0].focus();
+              
+              // "Clean up" manually
+              isComposing = false;
+              checkTextarea = noop;
+              clearTimeout(timeoutId);
+              
+              // ...and insert the wanted character
+              textarea.val(e.data);
+              typedText();
+              textarea.val('');
+              
+          }, 0);
+      }
+    }, true);
+    textarea[0].addEventListener('compositionend', function(e) {
+      isComposing = false;
+    }, true);
+    
     function onKeydown(e) {
       if (e.target !== textarea[0]) return;
 
@@ -174,7 +208,6 @@ var saneKeyboardEvents = (function() {
 
     function onKeypress(e) {
       if (e.target !== textarea[0]) return;
-
       // call the key handler for repeated keypresses.
       // This excludes keypresses that happen directly
       // after keydown.  In that case, there will be
@@ -209,7 +242,7 @@ var saneKeyboardEvents = (function() {
       //   reliable as our tests are comprehensive
       // If anything like #40 or #71 is reported in IE < 9, see
       // b1318e5349160b665003e36d4eedd64101ceacd8
-      if (hasSelection()) return;
+      if (hasSelection() || isComposing) return;
 
       var text = textarea.val();
       if (text.length === 1) {
